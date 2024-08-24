@@ -27,6 +27,7 @@ const client = new MongoClient(uri, {
 });
 const food_Collection = client.db("Bite_Bond").collection("Foods_Collection")
 const food_Rating_Collection = client.db("Bite_Bond").collection("Food_Rating")
+const food_Ordering_Collection = client.db("Bite_Bond").collection("Food_Ordered")
 async function run() {
   try {
     // Home page Our Menu Section
@@ -61,8 +62,28 @@ async function run() {
       res.send(result)
     })
 
+    // Review to save database
+    app.post('/rating', async (req, res) => {
+      const data = req.body;
+      const result = await food_Rating_Collection.insertOne(data);
+      res.send(result);
+    })
+
+    // Store All food a user is Ordered
+    app.post('/ordering-food', async (req, res) => {
+      const data = req.body;
+      const result = await food_Ordering_Collection.insertOne(data);
+      res.send(result);
+    })
+
+    // Get all review data to disable button
+    app.get('/ratingData', async (req, res) => {
+      const result = await food_Rating_Collection.find().toArray()
+      res.send(result)
+    })
+
     // For Menu category wise data Load by query
-    app.get('/selected-category-food',async(req,res)=>{
+    app.get('/selected-category-food', async (req, res) => {
       const { category } = req.query
       const query = {
         food_category: category
